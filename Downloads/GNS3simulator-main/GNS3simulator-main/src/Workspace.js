@@ -11,14 +11,16 @@ import useImage from "use-image";
 
 const Workspace = ({
   elements,
+  setElements, // Add this line to destructure setElements
   connections,
   addConnection,
   deleteConnection,
   isEraseMode,
 }) => {
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [startConnection, setStartConnection] = useState(null);
   const stageRef = useRef(null);
 
-  // Element drop karne ke liye handleDrop function
   const handleDrop = (e) => {
     e.preventDefault();
     const stage = stageRef.current.getStage();
@@ -30,35 +32,32 @@ const Workspace = ({
       return;
     }
 
-    // Device name prompt karna
     const name = prompt("Enter device name:");
     if (!name) {
       return;
     }
 
-    const newElement = {
-      ...tool,
-      x: pointerPosition.x,
-      y: pointerPosition.y,
-      id: elements.length,
-      name: name,
-    };
-
-    setElements((prevElements) => [...prevElements, newElement]);
+    setElements((prevElements) => [
+      ...prevElements,
+      {
+        ...tool,
+        x: pointerPosition.x,
+        y: pointerPosition.y,
+        id: prevElements.length,
+        name: name,
+      },
+    ]);
   };
 
-  // Drag over handle karne ke liye
   const handleDragOver = (e) => {
     e.preventDefault();
   };
 
-  // Connection ka start point handle karne ke liye
   const handleConnectionStart = (element, pointIndex) => {
     setStartConnection({ element, pointIndex });
     setIsConnecting(true);
   };
 
-  // Connection ka end point handle karne ke liye
   const handleConnectionEnd = (element, pointIndex) => {
     if (isConnecting && startConnection) {
       const startElement = startConnection.element;
@@ -80,10 +79,10 @@ const Workspace = ({
   };
 
   const getConnectionPoints = (element) => [
-    { x: element.x + 25, y: element.y }, // Top
-    { x: element.x + 50, y: element.y + 25 }, // Right
-    { x: element.x + 25, y: element.y + 50 }, // Bottom
-    { x: element.x, y: element.y + 25 }, // Left
+    { x: element.x + 25, y: element.y },
+    { x: element.x + 50, y: element.y + 25 },
+    { x: element.x + 25, y: element.y + 50 },
+    { x: element.x, y: element.y + 25 },
   ];
 
   const updateElementPosition = (id, newPosition) => {
@@ -164,7 +163,7 @@ const URLImage = ({
   const [image] = useImage(element.src);
 
   return (
-    <>
+    <React.Fragment>
       <KonvaImage
         image={image}
         x={element.x}
@@ -195,7 +194,7 @@ const URLImage = ({
         fontSize={12}
         fill="black"
       />
-    </>
+    </React.Fragment>
   );
 };
 
