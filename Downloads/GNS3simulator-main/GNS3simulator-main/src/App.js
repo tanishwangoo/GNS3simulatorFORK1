@@ -4,28 +4,23 @@ import Workspace from "./Workspace";
 import Summary from "./Summary";
 
 function App() {
-  // State to manage elements, connections, and erase mode
   const [elements, setElements] = useState([]);
   const [connections, setConnections] = useState([]);
   const [isEraseMode, setIsEraseMode] = useState(false);
 
-  // New element add karne ke liye function
   const addElement = (element) => {
     setElements((prevElements) => [...prevElements, element]);
   };
 
-  // New connection add karne ke liye function
   const addConnection = (connection) => {
     setConnections((prevConnections) => [...prevConnections, connection]);
   };
 
-  // Connection delete karne ke liye function
   const deleteConnection = (index) => {
     setConnections((prevConnections) => {
-      // Filter out the connection to be deleted
       const updatedConnections = prevConnections.filter((_, i) => i !== index);
 
-      // Elements ko check karo jinme abhi bhi connections hain
+      // Get the elements that have connections
       const elementsWithConnections = updatedConnections.flatMap(
         (connection) => [connection.start.element.id, connection.end.element.id]
       );
@@ -33,19 +28,17 @@ function App() {
         ...new Set(elementsWithConnections),
       ];
 
-      // Elements remove karo jinme koi connection nahi bacha
+      // Filter out elements that have no connections
       const updatedElements = elements.filter((element) =>
         uniqueElementsWithConnections.includes(element.id)
       );
 
-      // New elements aur connections ke state update karo
       setElements(updatedElements);
 
       return updatedConnections;
     });
   };
 
-  // Erase mode toggle karne ke liye function
   const toggleEraseMode = () => {
     setIsEraseMode((prevMode) => !prevMode);
   };
@@ -104,6 +97,7 @@ function App() {
             addConnection={addConnection}
             deleteConnection={deleteConnection}
             isEraseMode={isEraseMode}
+            setElements={setElements} // Pass setElements here
           />
         </div>
         <Summary />
